@@ -2,158 +2,283 @@
 #include <cstdlib>
 #include <string>
 
-using namespace std;
+using namespace std; 
 
-void average()
+/* input for the number of values */
+int array_length_query()
 {
-    int amount, x, x_current;
-    float final_average, total = 0, *arr;
+    int arr_length;
+    
+    cout<<"Input the number of values: ";
+    cin>>arr_length;
+    cin.ignore();
+    
+    return arr_length;
+}
 
-    cout<<"Input the number of items: ";
-    cin>>amount;
+/* individual items input */
+float* array_items_query(int arr_length)
+{
+    float* arr;
+    int x, x_up_1; 
+    arr = new float[arr_length];
 
-    arr =  new float[amount];
-
-    for (x = 0; x < amount; x++)
+    for (x = 0; x < arr_length; x++)
     {
-        x_current = x + 1;
+        x_up_1 = x + 1;
 
-        cout<<"Input "<<x_current<<": ";
+        cout<<"Input item no."<<x_up_1<<": ";
         cin>>arr[x];
-
-        total += arr[x];
-    }
-    
-    cout<<"Your Input Values: ";
-
-    for (x = 0; x < amount; x++)
-    {
-        cout<<arr[x]<<" ";
     }
 
-    final_average = total/amount;
+    cin.ignore();
 
-    cout<<endl<<"The average: "<<final_average<<endl;
-    
+    return arr;
     delete arr;
-    cin.ignore();
 }
 
-void median()
+/* sections a long string into words and returns a string(boolean)*/
+string section(string str)
 {
-    int amount, x, y = 0, x_current, current_buffer, index_lowest, index_buffer, median_even_1, median_even_2, median_odd, counter;
-    float final_median, *arr, actual_median;
+    string word, inputted_strings[6], result="FFFFFF";
+    int y = 0, x = 0;
 
-    cout<<"Input the number of items: ";
-    cin>>amount;
-
-    arr =  new float[amount];
-
-    for (x = 0; x < amount; x++)
+    for (auto x : str)
     {
-        x_current = x + 1;
-
-        cout<<"Input "<<x_current<<": ";
-        cin>>arr[x];
-    }
-    /*sort*/
-    for (x = 0; x < amount; x++)
-    {
-        current_buffer = arr[x];
-        index_lowest = arr[x];
-        counter = 0;
-
-        for (y = x + 1; y < amount; y++)
+        if (x == ' ')
         {
-            if (index_lowest > arr[y])
+            inputted_strings[y] = word;
+            y++;
+            word = "";
+        }
+            else
             {
-                index_lowest = arr[y];
-                index_buffer = y;
-                counter++;
-            }
-        }
+                word += x;
+            } 
+    }
+    inputted_strings[y] = word;
+    word = "";
 
-        if (counter != 0)
+    for (x = 0; x < 6; x++)
+    {
+        if (inputted_strings[x] == "average" || inputted_strings[x] == "mean")
         {
-            arr[x] = index_lowest;
-            arr[index_buffer] =  current_buffer;
+            result[0] = 'T';
         }
-    }
-
-    cout<<"Sorted Values: ";
-
-    for (x = 0; x < amount; x++)
-    {
-        cout<<arr[x]<<" ";
-    }
-
-    if (amount % 2 == 0)
-    {
-        median_even_1 = (amount/2);
-        median_even_2 = median_even_1 - 1;
-        actual_median = (arr[median_even_1] + arr[median_even_2])/2;
-    }
-    else 
-    {
-        median_odd = (amount/2);
-        actual_median = arr[median_odd];
-    }
-    cout<<endl<<"The median: "<<actual_median<<endl;
-    cin.ignore();
-}
-
-void mode()
-{
-    int amount; 
-    cout<<"Input the number of items: ";
-}
-
-void help()
-{
-    cout<<"mean/average"<<endl;
-    cout<<"median"<<endl;
-    cout<<"mode"<<endl;
-}
-
-void scanner(string str)
-{
-    if (str == "average" || str == "mean")
-    {
-        average();
-    }
-        else if (str == "help")
-        {
-            help();
-        }
-            else if (str == "median")
+            else if (inputted_strings[x] == "median")
             {
-                median();
+                result[1] = 'T';
             }
-                else if (str == "mode")
+                else if (inputted_strings[x] == "mode")
                 {
-                    mode();
+                    result[2] = 'T';
                 }
+                    else if (inputted_strings[x] == "help")
+                    {
+                        result[3] = 'T';
+                    }
+                        else if (inputted_strings[x] == "clear")
+                        {
+                            result[4] = 'T';
+                        }
+                            else if (inputted_strings[x] == "EXIT")
+                            {
+                                result[5] = 'T';
+                            }
+    }
+
+    return result;
 }
 
-// Driver code
-int main()
+void enter_to_continue()
 {
-    string str;
+    string wait;
 
-    while (true)
+    cout<<"Press Enter to continue: ";
+    getline(cin, wait);
+}
+
+void median(float arr[], int arr_length)
+{
+    float actual_median;
+    int x;
+
+    if (arr_length % 2 == 0)
     {
-        cout<<">>> ";
-        getline(cin, str);
-        if (str == "EXIT")
-        {
-            break;
-        }
+        actual_median = (arr[arr_length/2] + arr[(arr_length/2)-1])/2;
+    }
         else 
         {
-            scanner(str);
+            actual_median = arr[arr_length/2];
         }
-        
-        cin.clear();
+
+    cout<<"Sorted values: ";
+
+    for (x = 0; x < arr_length; x++)
+    {
+        cout<<arr[x]<<" ";
     }
+
+    cout<<endl<<"The median: "<<actual_median<<endl<<endl;
+}
+
+void mode(float arr[], int arr_length)
+{
+    float *arr_2, *arr_3;
+    int x, y, amount = 0, count = 0, mode; 
+    bool isDuplicate;
+
+    arr_2 = new float[arr_length];
+    arr_3 = new float[arr_length];
+
+    for (x = 0; x < arr_length; x++)
+    {
+        arr_3[x] = 0;
+    }
+
+    for (x = 0; x < arr_length; x++)
+    {
+        isDuplicate = false;
+        for (y = 0; y  < amount; y++)
+        {
+            if (arr[x] == arr[y])
+            {
+                isDuplicate = true;
+                arr_3[count - 1]++;
+            }
+        }
+
+        if (!isDuplicate)
+        {
+            arr_2[count] = arr[x];
+            arr_3[count]++;
+            count++;
+        }
+        amount++;
+    }
+
+    for (x = 0; x < count; x++)
+    {
+        cout<<arr_2[x]<<" - "<<arr_3[x]<<endl;
+    }
+    
+    mode = arr_3[0];
+
+    for (x = 0; x < count; x++)
+    {
+        if (mode < arr_3[x])
+        {
+            mode = arr_3[x];
+        }
+    }
+
+    cout<<endl<<"The mode/modes are the value/values ";
+
+    for (x = 0; x < count; x++)
+    {
+        if (mode == arr_3[x])
+        {
+            cout<<arr_2[x]<<" ";
+        }
+    }
+
+    cout<<"with "<<mode<<" repetition/repetitions"<<endl<<endl;
+
+    delete arr_2, delete arr_3;
+}
+
+int main()
+{
+    string shell_input, available_commands[] = {"mean", "average", "median", "mode", "EXIT", "clear"}, result;
+    int arr_length, x, y, counter = 0, index_buffer;
+    float *arr, *arr_2, *arr_3, total, average, current_buffer, index_lowest;
+
+    cout<<"Welcome to QuikS, a CLI program calculator for simple descriptive statistics the available commands are the following: "<<endl<<endl;
+    cout<<"clear EXIT help mean/average median mode"<<endl<<endl;
+    cout<<"if at any point you need a reminder of the commands type help and press enter"<<endl;
+    cout<<"note: you can combine different commands to run them right after the other. Example: "<<endl;
+    cout<<">>> average median"<<endl<<endl;
+    
+    /* main looping section */
+    while (true)
+    {
+        cin.clear();
+        cout<<">>> ";
+        getline(cin, shell_input);
+        result = section(shell_input);
+
+        /* checking if any descriptive statistics is being done */
+        if (result[0] == 'T' || result[1] == 'T' || result[2] == 'T')
+        {
+            arr_length = array_length_query();
+            arr = new float[arr_length];
+            arr = array_items_query(arr_length);
+        }
+        /* preparing sorted values for median and/or mode */
+        if (result[1] == 'T' || result[2] == 'T')
+        {
+            for (x = 0; x < arr_length; x++)
+            {
+                current_buffer = arr[x];
+                index_lowest = arr[x];
+                counter = 0;
+
+                for (y = x + 1; y < arr_length; y++)
+                {
+                    if (index_lowest > arr[y])
+                    {
+                        index_lowest = arr[y];
+                        index_buffer = y;
+                        counter++;
+                    }
+                }
+
+                if (counter != 0)
+                {
+                    arr[x] = index_lowest;
+                    arr[index_buffer] = current_buffer;
+                }
+            }
+        }
+
+        /* checking the input */
+        if (result[0] == 'T') /* mean */
+        {
+            for (x = 0; x < arr_length;  x++)
+            {
+                total += arr[x];
+            }
+
+            average = total/arr_length;
+
+            cout<<endl<<"The average is "<<average<<endl<<endl;
+        }   
+        if (result[1] == 'T') /* median */
+        {
+            median(arr, arr_length);
+        }
+        if (result[2] == 'T') /* mode */
+        {
+            mode(arr, arr_length);
+        }
+        if (result[3] == 'T') /* help */
+        {
+            cout<<endl<<endl;
+            cout<<"Commands: average clear EXIT help mean median mode"<<endl;
+        }
+        if (result[4] == 'T') /* clear */
+        {
+            enter_to_continue();
+
+            cout<<"\x1B[2J\x1B[H";
+        }
+        if (result[5] == 'T') /* EXIT */
+        {
+            enter_to_continue();            
+            break;
+        }
+    }
+
+    delete arr, arr_2, arr_3;
     return EXIT_SUCCESS;
 }
